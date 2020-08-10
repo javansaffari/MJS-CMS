@@ -22,7 +22,7 @@ require_once('../includes/config.php');
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form method="post">
+                            <form method="post" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <label>Post Title</label>
                                     <input type="text" class="form-control" name="postData[title]">
@@ -36,17 +36,31 @@ require_once('../includes/config.php');
                                     <textarea class="form-control" name="postData[excerpt]" rows="2"></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label>Post Image URL</label>
-                                    <input type="text" class="form-control" name="postData[image]">
+                                    <label>Post Image</label>
+                                    <input type="file" class="form-control-file" name="image" id="exampleFormControlFile1">
                                 </div>
                                 <div class="form-group">
                                     <label>Post Author</label>
                                     <input type="text" class="form-control" name="postData[author]">
                                 </div>
                                 <div class="form-group">
-                                    <label>Post Tags</label>
-                                    <input type="text" class="form-control" name="postData[tags]">
+                                    <label>Post Cateory</label>
+                                    <select class="form-control" name="postData[category_id]">
+                                        <?php
+                                        // get category
+                                        $queryCategoryList = "SELECT * FROM categories";
+                                        $query = mysqli_query($dbConnection, $queryCategoryList);
+                                        while ($row = mysqli_fetch_assoc($query)) {
+                                        ?>
+                                            <option value="<?php echo $row['cat_id'] ?>"><?php echo $row['cat_title'] ?></option>
+                                        <?php
+                                        };
+                                        ?>
+                                    </select>
                                 </div>
+
+                                <input type="hidden" class="form-control" name="postData[date]" value="<?php echo date(date("Y/m/d")); ?>">
+
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                     <button type="submit" name="publish" class="btn btn-primary">Publish</button>
@@ -56,8 +70,13 @@ require_once('../includes/config.php');
                             // add post
                             if (isset($_POST['publish'])) {
                                 $postData = $_POST['postData'];
-                                var_dump($postData);
-                                $queryInsertPost = "INSERT INTO posts (post_title,post_content,post_excerpt,post_image,post_author,post_tags) VALUES ('$postData[title]','$postData[content]','$postData[excerpt]','$postData[image]','$postData[author]','$postData[tags]')";
+                                
+                                // img
+                                $postImgae = $_FILES['image']['name'];
+                                $postImageTemp = $_FILES['image']['tmp_name'];
+                                move_uploaded_file($postImageTemp, "../uploads/" . $postImgae);
+
+                                $queryInsertPost = "INSERT INTO posts (post_title,post_content,post_excerpt,post_image,post_author,post_category_id,post_date) VALUES ('$postData[title]','$postData[content]','$postData[excerpt]','$postImgae','$postData[author]','$postData[category_id]','$postData[date]')";
                                 mysqli_query($dbConnection, $queryInsertPost);
                             };
                             // Remove post
@@ -67,6 +86,7 @@ require_once('../includes/config.php');
                                 mysqli_query($dbConnection, $queryRemovePost);
                             };
                             ?>
+
                         </div>
 
                     </div>
@@ -103,6 +123,7 @@ require_once('../includes/config.php');
                     <?php }; ?>
                 </tbody>
             </table>
+
 
         </main>
     </div>

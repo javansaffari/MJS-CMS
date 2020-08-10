@@ -53,14 +53,12 @@ require_once('../includes/config.php');
           mysqli_query($dbConnection, $queryInsertCat);
         };
       };
-      // Remove Cat
+      // Remove Category
       if (isset($_GET['remove'])) {
         $cat_id = $_GET['remove'];
         $queryRemoveCat = "DELETE FROM categories WHERE cat_id = '$cat_id'";
         mysqli_query($dbConnection, $queryRemoveCat);
       };
-
-
       ?>
     </main>
   </div>
