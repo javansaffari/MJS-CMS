@@ -70,7 +70,7 @@ require_once('../includes/config.php');
                             // add post
                             if (isset($_POST['publish'])) {
                                 $postData = $_POST['postData'];
-                                
+
                                 // img
                                 $postImgae = $_FILES['image']['name'];
                                 $postImageTemp = $_FILES['image']['tmp_name'];
@@ -79,12 +79,6 @@ require_once('../includes/config.php');
                                 $queryInsertPost = "INSERT INTO posts (post_title,post_content,post_excerpt,post_image,post_author,post_category_id,post_date) VALUES ('$postData[title]','$postData[content]','$postData[excerpt]','$postImgae','$postData[author]','$postData[category_id]','$postData[date]')";
                                 mysqli_query($dbConnection, $queryInsertPost);
                             };
-                            // Remove post
-                            if (isset($_GET['remove'])) {
-                                $post_id = $_GET['remove'];
-                                $queryRemovePost = "DELETE FROM posts WHERE post_id = '$post_id'";
-                                mysqli_query($dbConnection, $queryRemovePost);
-                            };
                             ?>
 
                         </div>
@@ -92,6 +86,83 @@ require_once('../includes/config.php');
                     </div>
                 </div>
             </div>
+            <?php
+            // Remove post
+            if (isset($_GET['remove'])) {
+                $post_id = $_GET['remove'];
+                $queryRemovePost = "DELETE FROM posts WHERE post_id = '$post_id'";
+                mysqli_query($dbConnection, $queryRemovePost);
+            };
+            // Update post
+            if (isset($_GET['update'])) {
+                $post_id = $_GET['update'];
+                $queryUpdatePost = "SELECT * FROM posts WHERE post_id = '$post_id'";
+                $query = mysqli_query($dbConnection, $queryUpdatePost);
+                while ($row = mysqli_fetch_assoc($query)) {
+            ?>
+
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>Post Title</label>
+                            <input type="text" class="form-control" name="postNewData[title]" value="<?php echo $row['post_title']; ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Post Content</label>
+                            <textarea class="form-control" name="postNewData[content]" rows="4"><?php echo $row['post_content']; ?></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Post Excerpt</label>
+                            <textarea class="form-control" name="postNewData[excerpt]" rows="2"><?php echo $row['post_excerpt']; ?></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Post Image</label>
+                            <img style="width:100px;" src="../uploads/<?php echo $row['post_image']; ?>" alt="">
+                            <input type="file" class="form-control-file" name="image" id="exampleFormControlFile1" value="<?php echo $row['post_image']; ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Post Author</label>
+                            <input type="text" class="form-control" name="postNewData[author]" value="<?php echo $row['post_author']; ?>">
+                        </div>
+
+                        <input type="hidden" class="form-control" name="postNewData[date]" value="<?php echo date(date("Y/m/d")); ?>">
+
+                        <button type="submit" name="updatebtn" class="btn btn-primary">update</button>
+
+                        <?php
+                        // update post
+                        if (isset($_POST['updatebtn'])) {
+                            $postNewData = $_POST['postNewData'];
+                            // img
+                            $postNewImgae = $_FILES['image']['name'];
+                            $postNewImageTemp = $_FILES['image']['tmp_name'];
+                            move_uploaded_file($postNewImageTemp, "../uploads/" . $postNewImgae);
+
+                            $querySetUpdatePost = "UPDATE posts SET
+                           
+                            post_title = '$postNewData[title]'
+                            ,
+                            post_content = '$postNewData[content]'
+                            ,
+                            post_excerpt = '$postNewData[excerpt]'
+                            ,
+                            post_image = '$postNewImgae'
+                            ,
+                            post_author = '$postNewData[author]'
+                            ,
+                            post_date = '$postNewData[date]'
+                            
+                           WHERE post_id = '$post_id'";
+
+                            mysqli_query($dbConnection, $querySetUpdatePost);
+                        };
+                        ?>
+
+                    </form>
+            <?php
+
+                };
+            };
+            ?>
             <table class="table">
                 <thead>
                     <tr>
@@ -116,7 +187,9 @@ require_once('../includes/config.php');
                             <td><?php echo $row['post_status']; ?></td>
                             <td><?php echo $row['post_category_id']; ?></td>
                             <td>
+                                <a class="btn btn-warning btn-sm" name="update" href="posts.php?update=<?php echo $row['post_id']; ?>">Update</a>
                                 <a class="btn btn-danger btn-sm" name="remove" href="posts.php?remove=<?php echo $row['post_id']; ?>">Remove</a>
+
                             </td>
 
                         </tr>
