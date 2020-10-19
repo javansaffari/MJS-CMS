@@ -155,6 +155,7 @@ require_once('../includes/config.php');
 
                             mysqli_query($dbConnection, $querySetUpdatePost);
                         };
+
                         ?>
 
                     </form>
@@ -185,7 +186,13 @@ require_once('../includes/config.php');
                             <td><?php echo $row['post_title']; ?></td>
                             <td><?php echo $row['post_date']; ?></td>
                             <td><?php echo $row['post_status']; ?></td>
-                            <td><?php echo $row['post_category_id']; ?></td>
+                            <td><?php
+
+                                $queryCategorySelectName = "SELECT * FROM categories WHERE cat_id = $row[post_category_id]";
+                                $querySelectCat = mysqli_query($dbConnection, $queryCategorySelectName);
+                                $rowCatId = mysqli_fetch_assoc($querySelectCat);
+                                echo $rowCatId['cat_title'];
+                                ?></td>
                             <td>
                                 <a class="btn btn-warning btn-sm" name="update" href="posts.php?update=<?php echo $row['post_id']; ?>">Update</a>
                                 <a class="btn btn-danger btn-sm" name="remove" href="posts.php?remove=<?php echo $row['post_id']; ?>">Remove</a>

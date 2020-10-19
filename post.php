@@ -53,53 +53,26 @@
 
     <main role="main">
 
-        <section class="jumbotron text-center">
-            <div class="container">
-                <h1>MJS CMS<span class="badge badge-info" style="font-size: 10px;">V0.6</span></h1>
 
-                <p class="lead text-muted">🚀 A Simple and Useful Content Management System Just for practice PHP. This CMS used PHP and Bootstrap Framework.</p>
-                <p>
-                    <a class="github-button " href="https://github.com/javansaffari/MJS-CMS" data-icon="octicon-star" aria-label="Star javansaffari/MJS-CMS on GitHub">Star</a>
-                    <a class="github-button" href="https://github.com/javansaffari/MJS-CMS/fork" data-icon="octicon-repo-forked" aria-label="Fork javansaffari/MJS-CMS on GitHub">Fork</a> </p>
-            </div>
-        </section>
 
-        <div class="bg-light">
+        <div class="bg-light jumbotron">
             <div class="container ">
-                <div class="row">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarNav">
-                            <ul class="navbar-nav">
-                                <?php
-                                $querySelectAllCat = 'SELECT * FROM categories';
-                                $query = mysqli_query($dbConnection, $querySelectAllCat);
-                                while ($row = mysqli_fetch_assoc($query)) {
-                                ?>
-                                    <li class="nav-item active">
-                                        <a class="nav-link" href="#"><?php echo $row['cat_title']; ?></a>
-                                    </li>
-                                <?php
-                                };
-                                ?>
-                            </ul>
-                        </div>
-                    </nav>
-                </div>
+
                 <div class="row">
 
                     <?php
-                    $querySelectAllPosts = "SELECT * FROM posts";
+                    $postUrl = $_GET['post'];
+                    $querySelectAllPosts = "SELECT * FROM posts WHERE post_id = $postUrl";
                     $query = mysqli_query($dbConnection, $querySelectAllPosts);
                     while ($row = mysqli_fetch_assoc($query)) {
                     ?>
-                        <div class="col-md-4">
-                            <div class="card mb-4 shadow-sm">
+                        <div class="col-md-12">
+                            <div class="card mb-12 shadow-sm">
                                 <img class="w-100" src="<?php echo "uploads/" . $row['post_image']; ?>" alt="">
                                 <div class="card-body">
-                                <a href="post.php?post=<?php echo $row['post_id']; ?>"><h2><?php echo $row['post_title']; ?></h2></a>
+                                    <h2><?php echo $row['post_title']; ?></h2>
+                                    <p class="card-text"><?php echo $row['post_content']; ?></p>
+<hr>
                                     <p class="card-text"><?php echo $row['post_excerpt']; ?></p>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <small class="text-muted"><?php echo $row['post_date']; ?></small>
